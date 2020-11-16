@@ -1,14 +1,29 @@
 package webcrawlie;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Ankur Anant <hello@ankuranant.dev>
  */
 public class CrawlerForm extends javax.swing.JFrame {
 
-    public CrawlerForm() {
+    private CrawlerForm() {
         initComponents();
     }
+    
+    private static CrawlerForm instance = new CrawlerForm();
+    
+    public static CrawlerForm getInstance() {
+        return instance;
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -19,34 +34,56 @@ public class CrawlerForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        inputEditText = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         StartButton = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        threadCounterLabel = new javax.swing.JLabel();
         PauseButton = new javax.swing.JButton();
         ResumeButton = new javax.swing.JButton();
         statusBar = new javax.swing.JProgressBar();
         jScrollPane2 = new javax.swing.JScrollPane();
-        outputEditText = new javax.swing.JTextArea();
+        outputTextArea = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        historyTextArea = new javax.swing.JTextArea();
+        scrapeTextArea = new javax.swing.JTextArea();
+        inputTextField = new javax.swing.JTextField();
+        ResumeButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(44, 62, 80));
 
-        inputEditText.setColumns(20);
-        inputEditText.setRows(5);
-        inputEditText.setText("Enter comma separated urls");
-        jScrollPane1.setViewportView(inputEditText);
+        jPanel1.setBackground(new java.awt.Color(231, 76, 60));
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 1, 48)); // NOI18N
+        jLabel1.setBackground(new java.awt.Color(231, 76, 60));
+        jLabel1.setFont(new java.awt.Font("DejaVu Sans", 0, 48)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Multithread Web Crawler");
         jLabel1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1030, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(7, Short.MAX_VALUE)))
+        );
+
+        StartButton.setBackground(new java.awt.Color(169, 249, 144));
+        StartButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        StartButton.setForeground(new java.awt.Color(0, 0, 0));
         StartButton.setText("Start Crawling");
         StartButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -54,12 +91,9 @@ public class CrawlerForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
-        jLabel2.setText("Thread Count: ");
-
-        threadCounterLabel.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
-        threadCounterLabel.setText("0");
-
+        PauseButton.setBackground(new java.awt.Color(169, 249, 144));
+        PauseButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        PauseButton.setForeground(new java.awt.Color(0, 0, 0));
         PauseButton.setText("Pause");
         PauseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -67,6 +101,9 @@ public class CrawlerForm extends javax.swing.JFrame {
             }
         });
 
+        ResumeButton.setBackground(new java.awt.Color(169, 249, 144));
+        ResumeButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        ResumeButton.setForeground(new java.awt.Color(0, 0, 0));
         ResumeButton.setText("Resume");
         ResumeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -74,16 +111,39 @@ public class CrawlerForm extends javax.swing.JFrame {
             }
         });
 
-        outputEditText.setColumns(20);
-        outputEditText.setRows(5);
-        jScrollPane2.setViewportView(outputEditText);
+        outputTextArea.setEditable(false);
+        outputTextArea.setColumns(20);
+        outputTextArea.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        outputTextArea.setRows(5);
+        jScrollPane2.setViewportView(outputTextArea);
 
-        jLabel4.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("DejaVu Sans", 1, 24)); // NOI18N
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel4.setText("Output:");
 
-        historyTextArea.setColumns(20);
-        historyTextArea.setRows(5);
-        jScrollPane3.setViewportView(historyTextArea);
+        scrapeTextArea.setEditable(false);
+        scrapeTextArea.setColumns(20);
+        scrapeTextArea.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        scrapeTextArea.setRows(5);
+        jScrollPane3.setViewportView(scrapeTextArea);
+
+        inputTextField.setFont(new java.awt.Font("DejaVu Sans", 0, 12)); // NOI18N
+        inputTextField.setText("Enter comma separated urls");
+        inputTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputTextFieldActionPerformed(evt);
+            }
+        });
+
+        ResumeButton1.setBackground(new java.awt.Color(169, 249, 144));
+        ResumeButton1.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        ResumeButton1.setForeground(new java.awt.Color(0, 0, 0));
+        ResumeButton1.setText("Reset");
+        ResumeButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ResumeButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -92,52 +152,48 @@ public class CrawlerForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(threadCounterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(StartButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(PauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(ResumeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(statusBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jScrollPane2)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(statusBar, javax.swing.GroupLayout.PREFERRED_SIZE, 777, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(inputTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(StartButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(PauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(ResumeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(ResumeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 615, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(8, 8, 8)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(inputTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(statusBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(StartButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(PauseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(ResumeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(threadCounterLabel))
-                        .addGap(26, 26, 26)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(ResumeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ResumeButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jScrollPane3))
                 .addContainerGap())
         );
@@ -145,17 +201,97 @@ public class CrawlerForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
+    static List<String> urlList;
+    static int totalURL = 0;
+    
+    private static final int MAX_THREAD_COUNT = 100;
+    
+    static List<MyRunnable> rList = new ArrayList<>();
+    static List<Thread> thList = new ArrayList<>();
+    
+    
     private void StartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StartButtonActionPerformed
         statusBar.setIndeterminate(true);
-    }//GEN-LAST:event_StartButtonActionPerformed
-
-    private void PauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PauseButtonActionPerformed
+        String inputData = inputTextField.getText();
+        urlList = new ArrayList<>(Arrays.asList(inputData.split(",")));
         
+        totalURL = urlList.size();
+        
+        for(int i=0; i<urlList.size(); i++) {
+            System.out.println(urlList.get(i));
+            AddToOutputWindow(urlList.get(i));
+            Runnable runnable = new MyRunnable(urlList.get(i), rList.size(), outputTextArea, scrapeTextArea);
+            rList.add((MyRunnable)runnable);
+            Thread th = new Thread(runnable);
+            thList.add(th);
+            th.start();
+        }
+        
+        inputTextField.setEditable(false);
+        
+    }//GEN-LAST:event_StartButtonActionPerformed
+    
+    public void AddToOutputWindow(String message) {
+        outputTextArea.append(message + "\n");
+    }
+    
+    private void PauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PauseButtonActionPerformed
+        if(rList.size() > 0) {
+            statusBar.setIndeterminate(false);
+            for(int i=0; i<rList.size(); i++) {
+                if(rList.get(i) == null) continue;
+                AddToOutputWindow("Pausing threads" + i);
+                synchronized(rList.get(i)) {
+                    rList.get(i).pause();
+                }
+            }
+
+        }
     }//GEN-LAST:event_PauseButtonActionPerformed
 
     private void ResumeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResumeButtonActionPerformed
-        
+        if(rList.size() > 0) {
+            statusBar.setIndeterminate(true);
+            for(int i=0; i<rList.size(); i++) {
+                if(rList.get(i) == null) continue;
+                AddToOutputWindow("Resuming thread " + i);
+                synchronized(rList.get(i)) {
+                    rList.get(i).resume();
+                }
+            }
+        }
     }//GEN-LAST:event_ResumeButtonActionPerformed
+    
+    public void StopThread(int id) {
+        System.out.println(id);
+        thList.get(id).interrupt();
+        
+        thList.set(id, null);
+        rList.set(id, null);
+        
+        totalURL --;
+        System.out.println("-->>" + totalURL);
+        
+        if(totalURL <= 0) {
+            System.out.println("-->><<--");
+            rList.clear();
+            thList.clear();
+            urlList.clear();
+            totalURL = 0;
+        }
+        
+    }
+    
+    private void inputTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputTextFieldActionPerformed
+        
+    }//GEN-LAST:event_inputTextFieldActionPerformed
+
+    private void ResumeButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResumeButton1ActionPerformed
+        statusBar.setIndeterminate(false);
+        inputTextField.setEditable(true);
+    }//GEN-LAST:event_ResumeButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -195,17 +331,16 @@ public class CrawlerForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton PauseButton;
     private javax.swing.JButton ResumeButton;
+    private javax.swing.JButton ResumeButton1;
     private javax.swing.JButton StartButton;
-    private javax.swing.JTextArea historyTextArea;
-    private javax.swing.JTextArea inputEditText;
+    private javax.swing.JTextField inputTextField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea outputEditText;
+    private javax.swing.JTextArea outputTextArea;
+    private javax.swing.JTextArea scrapeTextArea;
     private javax.swing.JProgressBar statusBar;
-    private javax.swing.JLabel threadCounterLabel;
     // End of variables declaration//GEN-END:variables
 }
