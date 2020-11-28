@@ -46,13 +46,7 @@ public class MyRunnable implements Runnable {
                 if (paused) {
                     try {
                         synchronized (pauseLock) {
-                            pauseLock.wait(); // will cause this Thread to block until 
-                            // another thread calls pauseLock.notifyAll()
-                            // Note that calling wait() will 
-                            // relinquish the synchronized lock that this 
-                            // thread holds on pauseLock so another thread
-                            // can acquire the lock to call notifyAll()
-                            // (link with explanation below this code)
+                            pauseLock.wait();
                         }
                     } catch (InterruptedException ex) {
                         break;
